@@ -1,4 +1,4 @@
-const { Schema, model, Types } = require('mongoose')
+const { Schema, model } = require('mongoose')
 
 const reactionSchema = new Schema({
     reactionBody: { Type: String, required: true, max_length: 280 },

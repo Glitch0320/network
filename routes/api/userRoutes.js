@@ -10,6 +10,8 @@ const {
     removeFriend
 } = require('../../controllers/userController')
 
+// /api/users
+
 router.route('/')
 .get(getAll)
 .post(createOne)

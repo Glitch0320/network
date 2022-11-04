@@ -10,6 +10,8 @@ const {
     removeReaction
 } = require('../../controllers/thoughtController')
 
+// /api/thoughts
+
 router.route('/')
 .get(getAll)
 .post(createOne)
