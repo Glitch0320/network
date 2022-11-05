@@ -1,9 +1,17 @@
-const { User, Thought, Reaction } = require('../models')
+const { User, Thought } = require('../models')
 
 module.exports = {
     // /api/users/
     async getAll(req, res) {
-        
+        try {
+            const users = await User.find({})
+            if (!users) {
+                res.status(404).json({message:'No users in db.'})
+            }
+            res.status(200).json(users)
+        } catch (error) {
+            res.status(500).json(error)
+        }
     },
 
     // /api/users/:id
