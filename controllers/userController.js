@@ -67,14 +67,42 @@ module.exports = {
             res.status(200).json(user)
         } catch (error) {
             res.status(500).json(error)
-        } 
+        }
     },
 
     // /api/users/:userId/friends/:friendId
     async addFriend(req, res) {
+        try {
+            const user = await User.findOneAndUpdate(
+                { _id: req.params.userId },
+                { $push: { friends: req.params.friendId } },
+                { new: true }
+            )
 
+            if (!user) {
+                res.status(404).json({ message: 'No user with that id.' })
+            }
+
+            res.status(200).json(user)
+        } catch (error) {
+            res.status(500).json(error)
+        }
     },
     async removeFriend(req, res) {
+        try {
+            const user = await User.findOneAndUpdate(
+                { _id: req.params.userId },
+                { $pull: { friends: req.params.friendId } },
+                { new: true }
+            )
 
+            if (!user) {
+                res.status(404).json({ message: 'No user with that id.' })
+            }
+
+            res.status(200).json(user)
+        } catch (error) {
+            res.status(500).json(error)
+        }
     }
 }
