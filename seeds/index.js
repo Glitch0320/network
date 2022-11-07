@@ -10,50 +10,40 @@ connection.once('open', async () => {
     await Thought.deleteMany({})
     await Reaction.deleteMany({})
 
-    await User.insertMany(
-        [
-            {
-                "username": "testone",
-                "email": "testone@gmail.com",
-                "password": "testtest"
-            },
-            {
-                "username": "testtwo",
-                "email": "testtwo@gmail.com",
-                "password": "testtest"
-            }
-        ],
-        (err) => err ? handleError(err) : console.log('Users created.')
+    // 
+    const user = await User.create({
+        "username": "test",
+        "email": "test@gmail.com",
+        "password": "testtest"
+    })
+
+    const friend = await User.create({
+        "username": "testtwo",
+        "email": "test2@gmail.com",
+        "password": "testtest"
+    })
+
+    const thought = await Thought.create({
+        "thoughtText": "This is an important thought.",
+        "username": user.username
+    })
+
+    const reaction = await Reaction.create({
+        "reactionBody": "I agree with your thought.",
+        "username": friend.username
+    })
+
+    await User.findOneAndUpdate(
+        { _id: user._id },
+        { $push: { thoughts: thought._id, friends: friend._id } },
+        { new: true }
     )
 
-    await Thought.insertMany(
-        [
-            {
-                "thoughtText": "This here is an important thought.",
-                "username": "testone"
-            },
-            {
-                "thoughtText": "This here is another important thought.",
-                "username": "testtwo"
-            }
-        ],
-        (err) => err ? handleError(err) : console.log('Thoughts created.')
-    )
-
-    await Reaction.insertMany(
-        [
-            {
-                "reactionBody": "I agree with your thought.",
-                "username": "testtwo"
-            },
-            {
-                "reactionBody": "I agree with your thought.",
-                "username": "testone" 
-            }
-        ],
-        (err) => err ? handleError(err) : console.log('Reactions created.')
+    await Thought.findOneAndUpdate(
+        { _id: thought._id },
+        { $push: { reactions: reaction._id }, },
+        { new: true }
     )
 
     console.log('DB seeded!')
-    
 })
