@@ -19,7 +19,7 @@ module.exports = {
     // /api/users/:id
     async getOne(req, res) {
         try {
-            const user = await User.findOne({ _id: req.params.id })
+            const user = await User.findOne({ _id: req.params.id }).populate('thoughts').populate('friends')
 
             if (!user) {
                 res.status(404).json({ message: 'No user with that id.', id: req.params.id })
@@ -58,11 +58,8 @@ module.exports = {
     },
     async deleteOne(req, res) {
         try {
-            const user = await User.findByIdAndDelete(req.params.id)
-
-            if (!user) {
-                res.status(404).json({ message: 'No user with that id.' })
-            }
+            const user = await User.findOneAndDelete({ _id: req.params.id })
+            await Thought.deleteMany({ _id: { $in: user.thoughts } })
 
             res.status(200).json(user)
         } catch (error) {

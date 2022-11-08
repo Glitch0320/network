@@ -1,4 +1,4 @@
-const { Thought, Reaction } = require('../models')
+const { Thought, Reaction, User } = require('../models')
 
 module.exports = {
     // /api/thoughts/
@@ -15,6 +15,17 @@ module.exports = {
             res.status(500).json(error)
         }
     },
+    async createOne(req, res) {
+        try {
+            const thought = await Thought.create(req.body.thought)
+
+            const user = await User.findOneAndUpdate({ _id: req.body.id }, { $push: { thoughts: thought._id } }, { new: true })
+
+            res.status(200).json(user)
+        } catch (error) {
+            res.status(500).json(error)
+        }
+    },
 
     // /api/thoughts/:id
     async getOne(req, res) {
@@ -23,19 +34,6 @@ module.exports = {
 
             if (!thought) {
                 res.status(404).json({ message: 'No thought with that id.', id: req.params.id })
-            }
-
-            res.status(200).json(thought)
-        } catch (error) {
-            res.status(500).json(error)
-        }
-    },
-    async createOne(req, res) {
-        try {
-            const thought = await Thought.create(req.body)
-
-            if (!thought) {
-                res.status(404).json({ message: 'Failed to create thought.' })
             }
 
             res.status(200).json(thought)
@@ -59,6 +57,7 @@ module.exports = {
     async deleteOne(req, res) {
         try {
             const thought = await Thought.findByIdAndDelete(req.params.id)
+            await Reaction.deleteMany({ _id: { $in: thought.reactions } })
 
             if (!thought) {
                 res.status(404).json({ message: 'No thought with that id.' })
