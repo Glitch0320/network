@@ -46,4 +46,5 @@ connection.once('open', async () => {
     )
 
     console.log('DB seeded!')
+    process.exit(0)
 })
